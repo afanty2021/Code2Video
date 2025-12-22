@@ -1,4 +1,6 @@
-# Python
+# 忽略的目录和文件
+
+# Python 缓存
 __pycache__/
 *.py[cod]
 *$py.class
@@ -60,3 +62,11 @@ htmlcov/
 *.tmp
 *.temp
 .cache/
+
+# 系统文件
+Thumbs.db
+
+# 项目特定的忽略目录
+.mypyt_cache/
+.spec-workflow/
+.swarm/
