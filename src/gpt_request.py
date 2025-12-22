@@ -1060,3 +1060,92 @@ if __name__ == "__main__":
     # # Claude
     # response_claude = request_claude_token("新加坡天气怎么样？")
     # print(response_claude)
+
+
+# 通用API接口函数，用于向后兼容和简化调用
+def request_api(prompt: str, model: str = "gpt-4o-mini", max_tokens: int = 2000, temperature: float = 0.7, system_prompt: str = None) -> list:
+    """
+    通用的API请求函数，自动选择合适的API接口。
+
+    Args:
+        prompt: 输入提示词
+        model: 模型名称，支持gpt-4o-mini, gpt-4o, claude-3.5, gemini等
+        max_tokens: 最大输出token数
+        temperature: 温度参数，控制随机性
+        system_prompt: 系统提示词（可选）
+
+    Returns:
+        list: API响应列表
+    """
+    # 根据模型名称选择对应的API函数
+    if "gpt-4o" in model:
+        if "mini" in model:
+            return request_gpt4o_mini(prompt, max_tokens=max_tokens)
+        else:
+            return request_gpt4o(prompt, max_tokens=max_tokens)
+    elif "gpt-4" in model:
+        if "turbo" in model:
+            return request_gpt4_turbo(prompt, max_tokens=max_tokens)
+        else:
+            return request_gpt4(prompt, max_tokens=max_tokens)
+    elif "claude-3.5" in model or "claude" in model:
+        return request_claude35(prompt, max_tokens=max_tokens)
+    elif "gemini" in model:
+        return request_gemini_pro(prompt, max_tokens=max_tokens)
+    elif "claude-opus" in model:
+        return request_claude_opus(prompt, max_tokens=max_tokens)
+    elif "claude-sonnet" in model:
+        return request_claude_sonnet(prompt, max_tokens=max_tokens)
+    elif "claude-haiku" in model:
+        return request_claude_haiku(prompt, max_tokens=max_tokens)
+    elif "gpt-4.1" in model:
+        return request_gpt41_token(prompt, max_tokens=max_tokens)
+    elif "gpt-4.5" in model:
+        return request_gpt45_token(prompt, max_tokens=max_tokens)
+    elif "gpt-5" in model:
+        return request_gpt5(prompt, max_tokens=max_tokens)
+    elif "deepseek" in model:
+        if "v3" in model:
+            return request_deepseek_v3(prompt, max_tokens=max_tokens)
+        else:
+            return request_deepseek(prompt, max_tokens=max_tokens)
+    elif "qwen" in model:
+        if "2.5" in model:
+            return request_qwen25(prompt, max_tokens=max_tokens)
+        elif "max" in model:
+            return request_qwen_max(prompt, max_tokens=max_tokens)
+        else:
+            return request_qwen(prompt, max_tokens=max_tokens)
+    elif "llama" in model:
+        if "meta" in model or "meta-llama" in model:
+            return request_meta_llama(prompt, max_tokens=max_tokens)
+        else:
+            return request_llama(prompt, max_tokens=max_tokens)
+    elif "yi" in model:
+        return request_yi(prompt, max_tokens=max_tokens)
+    elif "mistral" in model:
+        return request_mistral(prompt, max_tokens=max_tokens)
+    elif "zhipu" in model:
+        if "4.5" in model:
+            return request_zhipu_45(prompt, max_tokens=max_tokens)
+        else:
+            return request_zhipu(prompt, max_tokens=max_tokens)
+    else:
+        # 默认使用GPT-4o-mini
+        print(f"Warning: Unknown model '{model}', using GPT-4o-mini as default")
+        return request_gpt4o_mini(prompt, max_tokens=max_tokens)
+
+
+def api(prompt: str, max_tokens: int = 2000, model: str = "gpt-4o-mini") -> list:
+    """
+    简化的API接口函数，用于快速调用。
+
+    Args:
+        prompt: 输入提示词
+        max_tokens: 最大输出token数
+        model: 模型名称
+
+    Returns:
+        list: API响应列表
+    """
+    return request_api(prompt, model=model, max_tokens=max_tokens)

@@ -4,7 +4,15 @@ import re
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from prompts import get_prompt_download_assets, get_prompt_place_assets
+try:
+    from prompts import get_prompt_download_assets, get_prompt_place_assets
+except ImportError:
+    # 如果导入失败，提供简单实现
+    def get_prompt_download_assets(storyboard: dict = None):
+        return "分析故事板需要的外部资源"
+
+    def get_prompt_place_assets(storyboard: dict = None, assets_dir: str = None):
+        return "指导如何放置外部资源"
 
 
 class SmartSVGDownloader:

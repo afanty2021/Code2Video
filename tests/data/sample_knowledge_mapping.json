@@ -1,0 +1,104 @@
+{
+  "微积分": {
+    "reference_image": "assets/reference/calculus_fundamentals.jpg",
+    "related_concepts": ["导数", "积分", "极限", "函数", "连续性"],
+    "difficulty_level": "中等",
+    "estimated_duration": "45分钟"
+  },
+  "导数": {
+    "reference_image": "assets/reference/derivative_definition.jpg",
+    "related_concepts": ["极限", "变化率", "切线", "斜率", "可导性"],
+    "difficulty_level": "中等",
+    "estimated_duration": "30分钟"
+  },
+  "积分": {
+    "reference_image": "assets/reference/integral_concept.jpg",
+    "related_concepts": ["原函数", "面积", "定积分", "不定积分", "微积分基本定理"],
+    "difficulty_level": "中等",
+    "estimated_duration": "35分钟"
+  },
+  "极限": {
+    "reference_image": "assets/reference/limit_concept.jpg",
+    "related_concepts": ["收敛", "发散", "无穷小", "无穷大", "连续性"],
+    "difficulty_level": "较高",
+    "estimated_duration": "25分钟"
+  },
+  "函数": {
+    "reference_image": "assets/reference/function_properties.jpg",
+    "related_concepts": ["定义域", "值域", "单调性", "奇偶性", "周期性"],
+    "difficulty_level": "简单",
+    "estimated_duration": "20分钟"
+  },
+  "线性代数": {
+    "reference_image": "assets/reference/linear_algebra.jpg",
+    "related_concepts": ["矩阵", "向量", "行列式", "线性变换", "特征值"],
+    "difficulty_level": "较高",
+    "estimated_duration": "60分钟"
+  },
+  "概率论": {
+    "reference_image": "assets/reference/proability_theory.jpg",
+    "related_concepts": ["随机变量", "分布", "期望值", "方差", "贝叶斯定理"],
+    "difficulty_level": "中等",
+    "estimated_duration": "50分钟"
+  },
+  "统计学": {
+    "reference_image": "assets/reference/statistics.jpg",
+    "related_concepts": ["样本", "总体", "假设检验", "置信区间", "回归分析"],
+    "difficulty_level": "中等",
+    "estimated_duration": "55分钟"
+  },
+  "离散数学": {
+    "reference_image": "assets/reference/discrete_mathematics.jpg",
+    "related_concepts": ["集合", "图论", "逻辑", "组合数学", "递归"],
+    "difficulty_level": "中等",
+    "estimated_duration": "45分钟"
+  },
+  "算法": {
+    "reference_image": "assets/reference/algorithms.jpg",
+    "related_concepts": ["时间复杂度", "空间复杂度", "排序", "搜索", "动态规划"],
+    "difficulty_level": "较高",
+    "estimated_duration": "40分钟"
+  },
+  "数据结构": {
+    "reference_image": "assets/reference/data_structures.jpg",
+    "related_concepts": ["数组", "链表", "栈", "队列", "树", "图"],
+    "difficulty_level": "中等",
+    "estimated_duration": "50分钟"
+  },
+  "Python编程": {
+    "reference_image": "assets/reference/python_programming.jpg",
+    "related_concepts": ["变量", "函数", "类", "模块", "装饰器", "生成器"],
+    "difficulty_level": "简单",
+    "estimated_duration": "35分钟"
+  },
+  "机器学习": {
+    "reference_image": "assets/reference/machine_learning.jpg",
+    "related_concepts": ["监督学习", "无监督学习", "神经网络", "深度学习", "强化学习"],
+    "difficulty_level": "高",
+    "estimated_duration": "90分钟"
+  },
+  "深度学习": {
+    "reference_image": "assets/reference/deep_learning.jpg",
+    "related_concepts": ["CNN", "RNN", "Transformer", "GAN", "Autoencoder"],
+    "difficulty_level": "高",
+    "estimated_duration": "120分钟"
+  },
+  "物理学": {
+    "reference_image": "assets/reference/physics.jpg",
+    "related_concepts": ["力学", "电磁学", "热力学", "光学", "量子力学"],
+    "difficulty_level": "中等",
+    "estimated_duration": "70分钟"
+  },
+  "化学": {
+    "reference_image": "assets/reference/chemistry.jpg",
+    "related_concepts": ["原子结构", "化学键", "反应", "平衡", "有机化学"],
+    "difficulty_level": "中等",
+    "estimated_duration": "65分钟"
+  },
+  "生物学": {
+    "reference_image": "assets/reference/biology.jpg",
+    "related_concepts": ["细胞", "遗传", "进化", "生态", "分子生物学"],
+    "difficulty_level": "中等",
+    "estimated_duration": "60分钟"
+  }
+}

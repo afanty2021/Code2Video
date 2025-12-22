@@ -1,0 +1,30 @@
+# Code2Video 测试依赖
+
+# 测试框架
+pytest==8.4.2
+pytest-cov==6.1.0
+pytest-mock==3.14.0
+pytest-xdist>=3.8.0,<4.0
+pytest-asyncio==0.25.3
+
+# 模拟和测试工具
+responses==0.25.8
+requests-mock==1.12.1
+faker==37.0.2
+factory-boy==3.3.3
+
+# 性能测试
+pytest-benchmark==5.1.0
+
+# 代码质量
+flake8==7.1.1
+black==24.10.0
+isort==6.0.1
+mypy==1.15.0
+
+# 测试报告
+pytest-html==4.1.1
+pytest-json-report==1.5.0
+
+# 并发测试
+pytest-parallel==0.1.1
