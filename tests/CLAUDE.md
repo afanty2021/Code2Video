@@ -1,0 +1,111 @@
+# 测试框架
+
+> [根目录](../CLAUDE.md) > **tests**
+
+## 测试结构
+
+```
+tests/
+├── __init__.py                    # 测试包初始化
+├── conftest.py                   # pytest配置和共享夹具
+├── test_runner.py                # Python测试运行器
+├── report_generator.py           # 测试报告生成器
+├── fixtures/                     # 测试夹具和数据
+│   └── sample_data.py          # 示例测试数据工厂
+├── helpers/                      # 测试辅助工具
+│   └── mock_objects.py         # 模拟对象和工具
+├── unit/                         # 单元测试
+│   ├── test_agent.py           # 核心代理测试
+│   ├── test_utils.py           # 工具函数测试
+│   ├── test_eval_aes.py        # 美学评估测试
+│   └── test_eval_tq.py         # 教学质量评估测试
+└── integration/                  # 集成测试
+    ├── test_agent_workflow.py  # 代理工作流测试
+    └── test_evaluation_system.py # 评估系统测试
+```
+
+## 测试配置 (conftest.py)
+
+> [根目录](../CLAUDE.md) > [tests](./CLAUDE.md) > **conftest**
+
+### 共享Fixtures
+
+| Fixture | 用途 |
+|---------|------|
+| `temp_dir` | 创建临时目录 |
+| `mock_api_response` | 模拟API响应 |
+| `sample_run_config` | 示例运行配置 |
+| `sample_section` | 示例章节数据 |
+| `sample_teaching_outline` | 示例教学大纲 |
+| `sample_video_feedback` | 示例视频反馈 |
+| `sample_manim_code` | 示例Manim代码 |
+| `sample_storyboard_data` | 示例故事板数据 |
+
+### 测试标记
+
+```python
+@pytest.mark.unit        # 单元测试
+@pytest.mark.integration # 集成测试
+@pytest.mark.slow       # 慢速测试
+@pytest.mark.api        # 需要API的测试
+```
+
+## 运行测试
+
+### 使用 pytest
+```bash
+python -m pytest tests/ -v
+```
+
+### 使用测试运行器
+```bash
+python tests/test_runner.py test
+```
+
+### 运行特定类型测试
+```bash
+# 只运行单元测试
+python tests/test_runner.py test --type unit
+
+# 只运行集成测试
+python tests/test_runner.py test --type integration
+
+# 只运行带API的测试
+python tests/test_runner.py test --markers api
+```
+
+## 测试覆盖
+
+- **单元测试**：验证核心函数和类的功能正确性
+- **集成测试**：验证完整工作流端到端功能
+
+## 测试示例
+
+### 使用Fixture
+
+```python
+def test_agent_initialization(agent_with_mocks):
+    """测试代理初始化"""
+    agent = agent_with_mocks
+    assert agent.learning_topic == "微积分"
+    assert agent.idx == 1
+
+def test_section_creation(sample_section):
+    """测试Section对象创建"""
+    assert section.id == "test_section"
+    assert section.title == "测试章节"
+```
+
+### Mock API调用
+
+```python
+@patch('agent.get_prompt1_outline')
+def test_generate_outline(mock_prompt, agent_with_mocks):
+    mock_prompt.return_value = "测试提示词"
+    result = agent_with_mocks.generate_outline()
+    assert isinstance(result, TeachingOutline)
+```
+
+---
+
+*最后更新：2026-02-21*
