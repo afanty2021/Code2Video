@@ -81,6 +81,26 @@ def mock_api_response():
 
 
 @pytest.fixture
+def mock_run_config():
+    """创建模拟运行配置（用于集成测试）"""
+    def mock_api_func(prompt, max_tokens=10000):
+        """模拟 API 返回 (response, usage) 元组"""
+        return '{"topic": "test", "sections": []}', {"prompt_tokens": 100, "completion_tokens": 50, "total_tokens": 150}
+
+    return RunConfig(
+        use_feedback=True,
+        use_assets=True,
+        api=mock_api_func,
+        feedback_rounds=1,
+        iconfinder_api_key="test_key",
+        max_fix_bug_tries=2,
+        max_regenerate_tries=2,
+        max_feedback_gen_code_tries=2,
+        max_mllm_fix_bugs_tries=2
+    )
+
+
+@pytest.fixture
 def sample_run_config():
     """示例运行配置"""
     return RunConfig(

@@ -50,9 +50,9 @@ python tests/test_runner.py test --type integration
 
 | ID | Time | T | Title | Read |
 |----|------|---|-------|------|
+| #5564 | 5:48 PM | 🔴 | Added missing output directory to test fixture | ~255 |
+| #5506 | 5:33 PM | 🔵 | Code generation test fails with empty codes dictionary | ~274 |
+| #5459 | 5:25 PM | 🔵 | Test fixtures use Chinese knowledge points for validation | ~247 |
+| #5438 | 5:18 PM | 🔵 | Integration test structure uses fixtures for mock configuration | ~283 |
 | #5395 | 4:48 PM | 🔵 | Integration tests fail due to missing manim dependency | ~156 |
-| #5388 | " | 🟣 | 新增英语教学视频模块 | ~200 |
-| #5389 | " | ✅ | 更新测试框架文档 | ~169 |
-| #5272 | 4:42 PM | 🔵 | Verified tests/integration/CLAUDE.md documentation content | ~167 |
-| #5153 | 4:38 PM | ✅ | Created comprehensive AI context documentation for Code2Video project | ~199 |
 </claude-mem-context>

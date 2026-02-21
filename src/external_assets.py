@@ -121,7 +121,7 @@ class SmartSVGDownloader:
         if not storyboard_data:
             return []
 
-        prompt = get_prompt_download_assets(storyboard_data=storyboard_data)
+        prompt = get_prompt_download_assets(storyboard=storyboard_data)
         try:
             response = self.api_function(prompt, max_tokens=100)[0]
             try:

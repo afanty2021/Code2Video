@@ -119,7 +119,22 @@ class TeachingVideoAgent:
             self.token_usage["prompt_tokens"] += usage.get("prompt_tokens", 0)
             self.token_usage["completion_tokens"] += usage.get("completion_tokens", 0)
             self.token_usage["total_tokens"] += usage.get("total_tokens", 0)
-        return response
+        # 统一解析响应，支持字符串和对象格式
+        return self._parse_api_response(response)
+
+    def _parse_api_response(self, response):
+        """解析 API 响应，支持多种格式"""
+        # 如果已经是字符串，直接返回
+        if isinstance(response, str):
+            return response
+        # 尝试解析对象格式
+        try:
+            return response.candidates[0].content.parts[0].text
+        except Exception:
+            try:
+                return response.choices[0].message.content
+            except Exception:
+                return str(response)
 
     def _request_video_api_and_track_tokens(self, prompt, video_path):
         """Wraps video API requests and accumulates token usage automatically"""
@@ -149,7 +164,7 @@ class TeachingVideoAgent:
                 if (img_name := self.KNOWLEDGE2PATH.get(self.learning_topic)) is not None
                 else None
             )
-            prompt1 = get_prompt1_outline(knowledge_point=self.learning_topic, reference_image_path=refer_img_path)
+            prompt1 = get_prompt1_outline(topic=self.learning_topic, reference_image_path=refer_img_path)
 
             print(f"📝 Generating Outline...")
 
@@ -161,14 +176,8 @@ class TeachingVideoAgent:
                     if attempt == self.max_regenerate_tries:
                         raise ValueError("API requests failed multiple times")
                     continue
-                try:
-                    content = response.candidates[0].content.parts[0].text
-                except Exception:
-                    try:
-                        content = response.choices[0].message.content
-                    except Exception:
-                        content = str(response)
-                content = extract_json_from_markdown(content)
+                # response 已经是解析后的字符串
+                content = extract_json_from_markdown(response)
                 try:
                     outline_data = json.loads(content)
                     with open(self.output_dir / "outline.json", "w", encoding="utf-8") as f:
@@ -216,8 +225,8 @@ class TeachingVideoAgent:
             )
 
             prompt2 = get_prompt2_storyboard(
-                outline=json.dumps(self.outline.__dict__, ensure_ascii=False, indent=2),
-                reference_image_path=refer_img_path,
+                topic=self.learning_topic,
+                sections=json.dumps(self.outline.__dict__, ensure_ascii=False, indent=2),
             )
 
             for attempt in range(1, self.max_regenerate_tries + 1):
@@ -229,16 +238,9 @@ class TeachingVideoAgent:
                         raise ValueError("API requests failed multiple times")
                     continue
 
+                # response 已经是解析后的字符串
                 try:
-                    content = response.candidates[0].content.parts[0].text
-                except Exception:
-                    try:
-                        content = response.choices[0].message.content
-                    except Exception:
-                        content = str(response)
-
-                try:
-                    json_str = extract_json_from_markdown(content)
+                    json_str = extract_json_from_markdown(response)
                     storyboard_data = json.loads(json_str)
 
                     # Save original storyboard
@@ -292,7 +294,7 @@ class TeachingVideoAgent:
             print(f"⚠️ Asset download failed, using original storyboard: {e}")
             return storyboard_data
 
-    def generate_section_code(self, section: Section, attempt: int = 1, feedback_improvements=None) -> str:
+    def generate_section_code(self, section: Section, attempt: int = 1, feedback_improvements=None, base_class: str = "Scene") -> str:
         """Generate Manim code for a single section"""
         code_file = self.output_dir / f"{section.id}.py"
 
@@ -332,13 +334,8 @@ class TeachingVideoAgent:
             print(f"❌ Failed to generate code for {section.id} via API call.")
             return ""
 
-        try:
-            code = response.candidates[0].content.parts[0].text
-        except Exception:
-            try:
-                code = response.choices[0].message.content
-            except Exception:
-                code = str(response)
+        # response 已经是解析后的字符串
+        code = response
         if "```python" in code:
             code = code.split("```python")[1].split("```")[0].strip()
         elif "```" in code:

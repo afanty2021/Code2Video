@@ -120,6 +120,9 @@ def test_generate_outline(mock_prompt, agent_with_mocks):
 
 | ID | Time | T | Title | Read |
 |----|------|---|-------|------|
+| #5486 | 5:30 PM | 🔴 | Fixed mock API fixture to return proper response tuple | ~243 |
+| #5485 | 5:29 PM | 🔵 | mock_run_config fixture exists in conftest.py | ~167 |
+| #5437 | 5:18 PM | 🔵 | mock_run_config fixture not found in conftest | ~123 |
 | #5388 | 4:48 PM | 🟣 | 新增英语教学视频模块 | ~200 |
 | #5389 | " | ✅ | 更新测试框架文档 | ~169 |
 | #5255 | 4:41 PM | 🔵 | Explored tests/conftest.py - pytest configuration with comprehensive test fixtures | ~305 |

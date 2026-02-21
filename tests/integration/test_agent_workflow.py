@@ -25,6 +25,10 @@ class TestTeachingVideoAgentWorkflow:
         base_dir = temp_dir / "CASES"
         base_dir.mkdir(parents=True)
 
+        # 创建 output 目录（测试需要的）
+        output_dir = base_dir / "output"
+        output_dir.mkdir(parents=True)
+
         assets_dir = temp_dir / "assets"
         assets_dir.mkdir(parents=True)
 
@@ -54,7 +58,8 @@ class TestTeachingVideoAgentWorkflow:
         return {
             "base_dir": str(base_dir),
             "assets_dir": str(assets_dir),
-            "knowledge_mapping": knowledge_mapping
+            "knowledge_mapping": knowledge_mapping,
+            "output_dir": str(output_dir)
         }
 
     @pytest.fixture
@@ -160,21 +165,35 @@ class DerivativeDefinitionScene(Scene):
             cfg=mock_run_config
         )
 
-        # 设置API响应
+        # 设置API响应 - 返回 (response, usage) 元组格式
+        # 顺序: outline, storyboard, 增强(可能有), code
         mock_api = mock_run_config.api
         mock_api.side_effect = [
-            json.dumps(sample_responses["outline_response"]),
-            json.dumps(sample_responses["storyboard_response"]),
-            sample_responses["code_response"],
-            json.dumps(sample_responses["feedback_response"])
+            (json.dumps(sample_responses["outline_response"]), {"prompt_tokens": 100, "completion_tokens": 50, "total_tokens": 150}),
+            (json.dumps(sample_responses["storyboard_response"]), {"prompt_tokens": 200, "completion_tokens": 100, "total_tokens": 300}),
+            (json.dumps(sample_responses["storyboard_response"]), {"prompt_tokens": 150, "completion_tokens": 75, "total_tokens": 225}),  # 增强 storyboard
+            (sample_responses["code_response"], {"prompt_tokens": 300, "completion_tokens": 150, "total_tokens": 450}),
+            (json.dumps(sample_responses["feedback_response"]), {"prompt_tokens": 150, "completion_tokens": 75, "total_tokens": 225})
         ]
 
         # 模拟辅助函数
+        def mock_path_exists(self):
+            """Path.exists() 方法的 mock"""
+            return True
+
         with patch('agent.extract_answer_from_response') as mock_extract, \
-             patch('agent.save_code_to_file', return_value=True) as mock_save, \
              patch('agent.run_manim_script', return_value=True) as mock_manim, \
-             patch('os.path.exists', return_value=True), \
+             patch('agent.subprocess.run') as mock_subprocess, \
              patch('agent.stitch_videos', return_value=True) as mock_stitch:
+
+            # 模拟 subprocess.run 返回成功和错误
+            def mock_run(*args, **kwargs):
+                result = Mock()
+                result.returncode = 0
+                result.stdout = "Video rendered successfully"
+                result.stderr = ""  # 空错误表示成功
+                return result
+            mock_subprocess.side_effect = mock_run
 
             # 设置提取函数的行为
             def extract_side_effect(response):
@@ -229,14 +248,14 @@ class DerivativeDefinitionScene(Scene):
             cfg=mock_run_config
         )
 
-        # 设置API响应，包括调试修复
+        # 设置API响应，包括调试修复 - 返回 (response, usage) 元组格式
         mock_api = mock_run_config.api
         mock_api.side_effect = [
-            json.dumps(sample_responses["outline_response"]),
-            json.dumps(sample_responses["storyboard_response"]),
-            "invalid code",  # 初始代码有误
-            "fixed code",   # 修复后的代码
-            json.dumps(sample_responses["feedback_response"])
+            (json.dumps(sample_responses["outline_response"]), {"prompt_tokens": 100, "completion_tokens": 50, "total_tokens": 150}),
+            (json.dumps(sample_responses["storyboard_response"]), {"prompt_tokens": 200, "completion_tokens": 100, "total_tokens": 300}),
+            ("invalid code", {"prompt_tokens": 300, "completion_tokens": 150, "total_tokens": 450}),  # 初始代码有误
+            ("fixed code", {"prompt_tokens": 300, "completion_tokens": 150, "total_tokens": 450}),   # 修复后的代码
+            (json.dumps(sample_responses["feedback_response"]), {"prompt_tokens": 150, "completion_tokens": 75, "total_tokens": 225})
         ]
 
         with patch('agent.extract_answer_from_response') as mock_extract, \
@@ -296,12 +315,12 @@ class DerivativeDefinitionScene(Scene):
 
         mock_api = mock_run_config.api
         mock_api.side_effect = [
-            json.dumps(sample_responses["outline_response"]),
-            json.dumps(sample_responses["storyboard_response"]),
-            sample_responses["code_response"],
-            json.dumps(problematic_feedback),  # 第一次反馈有问题
-            "optimized code",  # 优化后的代码
-            json.dumps(sample_responses["feedback_response"])  # 第二次反馈
+            (json.dumps(sample_responses["outline_response"]), {"prompt_tokens": 100, "completion_tokens": 50, "total_tokens": 150}),
+            (json.dumps(sample_responses["storyboard_response"]), {"prompt_tokens": 200, "completion_tokens": 100, "total_tokens": 300}),
+            (sample_responses["code_response"], {"prompt_tokens": 300, "completion_tokens": 150, "total_tokens": 450}),
+            (json.dumps(problematic_feedback), {"prompt_tokens": 150, "completion_tokens": 75, "total_tokens": 225}),  # 第一次反馈有问题
+            ("optimized code", {"prompt_tokens": 300, "completion_tokens": 150, "total_tokens": 450}),  # 优化后的代码
+            (json.dumps(sample_responses["feedback_response"]), {"prompt_tokens": 150, "completion_tokens": 75, "total_tokens": 225})  # 第二次反馈
         ]
 
         with patch('agent.extract_answer_from_response') as mock_extract, \
@@ -374,7 +393,7 @@ class DerivativeDefinitionScene(Scene):
 
         mock_api = mock_run_config.api
         mock_api.side_effect = [
-            sample_responses["code_response"] for _ in range(3)
+            (sample_responses["code_response"], {"prompt_tokens": 300, "completion_tokens": 150, "total_tokens": 450}) for _ in range(3)
         ]
 
         with patch('agent.extract_answer_from_response') as mock_extract, \
@@ -510,7 +529,17 @@ class TestPerformanceAndScalability:
         mock_run_config
     ):
         """测试大型项目处理"""
-        mock_get_output_dir.return_value = temp_dir / "output"
+        # 创建必要的目录结构（包含 CASES）
+        base_dir = temp_dir / "CASES"
+        base_dir.mkdir(parents=True)
+
+        # 创建 JSON 文件（agent.py 需要）
+        json_dir = temp_dir / "json_files"
+        json_dir.mkdir(parents=True)
+        ref_mapping = json_dir / "long_video_ref_mapping.json"
+        ref_mapping.write_text("{}")
+
+        mock_get_output_dir.return_value = base_dir / "output"
 
         # 创建大量章节的项目
         agent = TeachingVideoAgent(

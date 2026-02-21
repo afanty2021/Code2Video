@@ -3,12 +3,13 @@
 包含用于生成教学视频内容的各种提示词模板。
 """
 
-def get_prompt1_outline(topic: str = None, target_audience: str = "大学生") -> str:
+def get_prompt1_outline(topic: str = None, target_audience: str = "大学生", reference_image_path: str = None) -> str:
     """生成教学大纲的提示词"""
+    ref_img_section = f"\n\n参考图片路径：{reference_image_path}" if reference_image_path else ""
     return f"""
 你是一个专业的教学内容设计师。请为主题"{topic}"创建一个详细的教学大纲。
 
-目标受众：{target_audience}
+目标受众：{target_audience}{ref_img_section}
 
 请生成一个包含以下内容的大纲：
 1. 主题概述
@@ -99,6 +100,16 @@ def get_prompt4_feedback(
 }}
 """
 
+
+def get_regenerate_note(attempt: int, MAX_REGENERATE_TRIES: int = 3) -> str:
+    """生成代码重新生成的提示注释"""
+    return f"""
+注意：这是第 {attempt}/{MAX_REGENERATE_TRIES} 次尝试生成代码。
+如果上次生成的代码有问题，请根据错误信息进行修复。
+确保生成的代码语法正确，可以直接运行。
+"""
+
+
 def get_prompt5_debug(
     section_id: str = None,
     error_message: str = "",
@@ -173,4 +184,32 @@ def get_prompt_place_assets(storyboard: dict = None, assets_dir: str = None) -> 
 4. Manim对象创建指导
 
 请以JSON格式返回结果，包含具体的代码修改建议。
+"""
+
+
+def get_prompt4_layout_feedback(section: dict = None, position_table: str = None) -> str:
+    """获取布局反馈的提示词"""
+    return f"""
+你是一个专业的Manim代码布局分析专家。请分析以下章节代码的布局问题。
+
+章节信息：{section}
+
+代码元素位置表：
+{position_table}
+
+请分析以下布局问题：
+1. 元素是否超出画面边界
+2. 元素是否相互重叠
+3. 元素位置是否合理
+4. 是否有元素被遮挡
+
+请以JSON格式返回结果：
+{{
+    "layout": {{
+        "has_issues": true/false,
+        "improvements": [
+            {{"problem": "问题描述", "solution": "解决方案"}}
+        ]
+    }}
+}}
 """
